@@ -3,10 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Games</title>
+    <title>Game Room: tiny browser games for programmers</title>
+    <meta name="description" content="%DESC%" />
+    <meta name="theme-color" content="#fff0f7" />
+    <meta name="author" content="pavi2410" />
+    <link rel="canonical" href="%SITE%/" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Game Room" />
+    <meta property="og:title" content="Game Room: tiny browser games for programmers" />
+    <meta property="og:description" content="%DESC%" />
+    <meta property="og:url" content="%SITE%/" />
+    <meta property="og:image" content="%SITE%/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Game Room: tiny games, big brain energy" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Game Room: tiny browser games for programmers" />
+    <meta name="twitter:description" content="%DESC%" />
+    <meta name="twitter:image" content="%SITE%/og.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Game Room",
+        "url": "%SITE%/",
+        "description": "%DESC%"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>Game Room needs JavaScript to run. Please enable it to play.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

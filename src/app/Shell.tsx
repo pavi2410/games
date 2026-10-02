@@ -1,6 +1,9 @@
 import { createEffect, createMemo, createSignal, Show, type ParentComponent } from "solid-js";
 import { useBeforeLeave, useLocation } from "@solidjs/router";
 
+import { GAMES, SITE_NAME } from "../games/meta";
+
+const HOME_TITLE = `${SITE_NAME}: tiny browser games for programmers`;
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const COVER_MS = 220;
 
@@ -31,6 +34,8 @@ const Shell: ParentComponent = (props) => {
     () => loc.pathname,
     (p) => {
       document.body.classList.toggle("candy", p === "/");
+      const g = GAMES.find((x) => p === `/${x.id}`);
+      document.title = g ? `${g.title} · ${SITE_NAME}` : HOME_TITLE;
       setTimeout(() => setCover(false), 90);
     },
   );
