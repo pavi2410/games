@@ -6,18 +6,19 @@ import Board from "./Board";
 
 function Panel() {
   const g = useContext(ArrowsCtx);
-  // Fit viewport height on phones; cap width on desktop.
+  // Phones: full-screen overlay. sm+: centered card capped by width and viewport height.
   const maxW = () => {
     const { w, h } = g.dims();
     return `min(${w * 60 + 32}px, max(240px, calc((100dvh - 220px) * ${w} / ${h})))`;
   };
 
   return (
-    <div class="flex justify-center">
-      <div class="w-full rounded-2xl bg-white p-3 shadow-lg" style={{ "max-width": maxW() }}>
-        <Header />
-        <Board />
-      </div>
+    <div
+      class="fixed inset-0 z-10 flex flex-col bg-white p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:mx-auto sm:block sm:w-full sm:max-w-(--mw) sm:rounded-2xl sm:shadow-lg"
+      style={{ "--mw": maxW() }}
+    >
+      <Header />
+      <Board />
     </div>
   );
 }

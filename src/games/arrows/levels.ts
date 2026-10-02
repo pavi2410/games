@@ -189,9 +189,9 @@ function orient(paths: number[][], w: number, h: number, rand: Rand, targetDepth
  * choose head ends so the board is clearable. Retries with fresh tilings; if
  * none is perfect the best attempt drops its few stuck snakes.
  */
-export function makeLevel(n: number): Level {
+export function makeLevel(n: number, ratio = 1.4): Level {
   const w = Math.min(5 + ((n - 1) >> 1), 10);
-  const h = Math.round(w * 1.4);
+  const h = Math.round(w * ratio);
   const maxLen = Math.min(3 + (n >> 3), 6);
   const turn = Math.min(0.25 + n * 0.015, 0.55);
   const targetDepth = Math.min(2 + Math.floor(n * 0.45), 12);

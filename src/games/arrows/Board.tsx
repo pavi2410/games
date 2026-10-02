@@ -7,10 +7,11 @@ export default function Board() {
   const g = useContext(ArrowsCtx);
 
   return (
-    <svg
-      viewBox={`0 0 ${g.dims().w} ${g.dims().h}`}
-      class="block w-full touch-manipulation overflow-hidden rounded-xl bg-white select-none"
-    >
+    <div class="flex min-h-0 flex-1 items-center justify-center sm:block">
+      <svg
+        viewBox={`0 0 ${g.dims().w} ${g.dims().h}`}
+        class="block h-full w-full touch-manipulation overflow-hidden bg-white select-none sm:h-auto sm:rounded-xl"
+      >
       <For each={g.shapes}>
         {(s, id) => (
           <Show when={!s.gone}>
@@ -42,5 +43,6 @@ export default function Board() {
         )}
       </For>
     </svg>
+    </div>
   );
 }

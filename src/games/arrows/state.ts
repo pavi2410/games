@@ -31,10 +31,17 @@ const fmt = (pts: Pt[]) => ({
 const shapesOf = (lv: Level): Shape[] =>
   lv.pieces.map((p) => ({ ...fmt(toPts(p.cells, lv.w)), dir: p.dir, gone: false }));
 
+/** Phones: grid matches the free screen area (board covers it). Else 1.4. */
+function boardRatio(): number {
+  if (typeof window === "undefined" || window.innerWidth >= 640) return 1.4;
+  const free = (window.innerHeight - 150) / (window.innerWidth - 24);
+  return Math.min(Math.max(free, 1.2), 2.1);
+}
+
 export function createArrows() {
   const [prog, setProg] = createSignal<Prog>(load(PROG_KEY, { unlocked: 0, done: [] }));
   const [li, setLi] = createSignal(0);
-  let lv = makeLevel(1); // plain: level layout never changes mid-level
+  let lv = makeLevel(1, boardRatio()); // plain: layout never changes mid-level
   const [dims, setDims] = createSignal({ w: lv.w, h: lv.h });
   const [shapes, setShapes] = createStore<Shape[]>(shapesOf(lv));
   const [hearts, setHearts] = createSignal(HEARTS);
@@ -47,7 +54,7 @@ export function createArrows() {
 
   function loadLevel(n: number) {
     cancelAnimationFrame(raf);
-    lv = makeLevel(n + 1);
+    lv = makeLevel(n + 1, boardRatio());
     setDims({ w: lv.w, h: lv.h });
     setShapes(() => shapesOf(lv));
     setLi(n);
