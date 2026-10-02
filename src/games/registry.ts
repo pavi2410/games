@@ -32,4 +32,10 @@ export const games: GameInfo[] = [
     blurb: "Build circuits that match a truth table with the fewest gates.",
     component: lazy(() => import("./gates/Game")),
   },
+  {
+    id: "valid",
+    title: "Valid or Nope",
+    blurb: "Is that email, URL or IP address actually valid? Swipe fast.",
+    component: lazy(() => import("./valid/Game")),
+  },
 ];

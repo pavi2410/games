@@ -71,6 +71,19 @@ const gates = (
   </svg>
 );
 
+const valid = (
+  <svg {...frame}>
+    <rect x="22" y="10" width="76" height="60" rx="10" fill="#fff" stroke="#3b2a63" stroke-width="3" />
+    <text x="60" y="36" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#3b2a63">
+      a@b.com
+    </text>
+    <circle cx="40" cy="54" r="8" fill="#ff4d6d" />
+    <path d="M36 50 L44 58 M44 50 L36 58" stroke="#fff" stroke-width="2.5" stroke-linecap="round" />
+    <circle cx="80" cy="54" r="8" fill="#36c9a0" />
+    <path d="M76 54 L79 57 L85 50" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+);
+
 const fallback = (
   <svg {...frame}>
     <circle cx="60" cy="40" r="22" fill="#c3a6ff" />
@@ -91,6 +104,7 @@ const LOOKS: Record<string, Look> = {
   arrows: { art: arrows, bg: "bg-sky-200", lip: "border-sky-400", btn: "bg-sky-500" },
   regex: { art: regex, bg: "bg-emerald-200", lip: "border-emerald-400", btn: "bg-emerald-500" },
   gates: { art: gates, bg: "bg-amber-200", lip: "border-amber-400", btn: "bg-amber-500" },
+  valid: { art: valid, bg: "bg-orange-200", lip: "border-orange-400", btn: "bg-orange-500" },
 };
 
 export const lookFor = (id: string): Look =>

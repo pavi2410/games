@@ -22,6 +22,10 @@ export function statFor(id: string): string | null {
       const n = count(load("lg:best", {}));
       return n ? `${n}/12 solved` : null;
     }
+    case "valid": {
+      const n = count(load("vn:best", {}));
+      return n ? `${n}/6 categories played` : null;
+    }
     default:
       return null;
   }
