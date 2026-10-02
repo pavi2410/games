@@ -1,19 +1,10 @@
 import { render } from "@solidjs/web";
+import "@fontsource-variable/fredoka";
 import { Router } from "./app/router";
+import Shell from "./app/Shell";
 import "./index.css";
 
 render(
-  () => (
-    <Router>
-      {(props) => (
-        <div class="mx-auto max-w-5xl p-4">
-          <header class="mb-6">
-            <a href="/" class="text-xl font-bold">Games</a>
-          </header>
-          <main>{props.children}</main>
-        </div>
-      )}
-    </Router>
-  ),
+  () => <Router>{(props) => <Shell>{props.children}</Shell>}</Router>,
   document.getElementById("root")!,
 );

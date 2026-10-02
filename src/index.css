@@ -1,5 +1,67 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: "Fredoka Variable", ui-rounded, system-ui, sans-serif;
+
+  --animate-bob: bob 2.4s ease-in-out infinite;
+  --animate-float: float 14s ease-in-out infinite;
+  --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  --animate-wiggle: wiggle 0.5s ease-in-out;
+  --animate-page-in: page-in 0.3s ease-out backwards;
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(2deg);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: translate(14px, -26px) rotate(40deg);
+    }
+    66% {
+      transform: translate(-12px, -10px) rotate(-30deg);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.85) rotate(var(--tilt, 0deg));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotate(var(--tilt, 0deg));
+    }
+  }
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1);
+    }
+    25% {
+      transform: rotate(-6deg) scale(1.08);
+    }
+    75% {
+      transform: rotate(6deg) scale(1.08);
+    }
+  }
+  @keyframes page-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 html,
 body {
   overscroll-behavior: none;
@@ -7,6 +69,12 @@ body {
 
 body {
   @apply min-h-screen bg-zinc-900 text-zinc-100 antialiased;
+}
+
+/* Home: light candy theme (toggled by Shell). */
+body.candy {
+  background: linear-gradient(160deg, #fff0f7 0%, #eaf1ff 50%, #fff6dc 100%) fixed;
+  color: #3b2a63;
 }
 
 @keyframes shake {
@@ -24,4 +92,14 @@ body {
 
 .animate-shake {
   animation: shake 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

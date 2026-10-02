@@ -1,6 +1,6 @@
 import { createRouter } from "@solidjs/router";
 import { games } from "../games/registry";
-import Home from "./Home";
+import Home from "./home/Home";
 import NotFound from "./NotFound";
 
 export const Router = createRouter({

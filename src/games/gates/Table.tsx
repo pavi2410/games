@@ -1,4 +1,4 @@
-import { For, Index, useContext } from "solid-js";
+import { For, useContext } from "solid-js";
 import { GatesCtx } from "./ctx";
 
 const bit = (v: boolean | null) => (v === null ? "·" : v ? "1" : "0");
@@ -22,7 +22,9 @@ export default function Table() {
         <For each={g.result().rows}>
           {(r) => (
             <tr class="border-t border-zinc-800">
-              <Index each={r.vals}>{(v) => <td class={`${td} text-zinc-300`}>{bit(v())}</td>}</Index>
+              <For each={r.vals} keyed={false}>
+                {(v) => <td class={`${td} text-zinc-300`}>{bit(v())}</td>}
+              </For>
               <td class={`${td} text-zinc-100`}>{bit(r.want)}</td>
               <td
                 class={[
