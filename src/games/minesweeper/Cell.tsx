@@ -79,7 +79,7 @@ export default function CellView(props: { i: number }) {
         "flex aspect-square w-full touch-manipulation items-center justify-center leading-none font-bold select-none [-webkit-touch-callout:none]",
         g.cols() > 20 ? "text-[11px] sm:text-sm" : g.cols() > 12 ? "text-sm sm:text-base" : "text-lg sm:text-xl",
         c().open
-          ? "border border-[#868686] bg-[#bdbdbd]"
+          ? "border-t border-l border-[#7b7b7b] bg-[#bdbdbd]"
           : "bg-[#bdbdbd] shadow-[inset_2px_2px_0_#ffffff,inset_-2px_-2px_0_#7b7b7b] active:shadow-[inset_1px_1px_2px_#7b7b7b]",
         {
           "bg-[#ff5a5a]!": c().boom,

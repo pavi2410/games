@@ -10,7 +10,7 @@ export default function Board() {
       onContextMenu={(e) => e.preventDefault()}
     >
       <div
-        class="grid w-full gap-px bg-[#868686]"
+        class="grid w-full gap-0 border-r border-b border-[#7b7b7b]"
         style={{ "grid-template-columns": `repeat(${g.cols()}, minmax(0, 1fr))` }}
       >
         <Repeat count={g.count()}>{(i) => <Cell i={i} />}</Repeat>
