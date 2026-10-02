@@ -3,6 +3,7 @@ import { load, save } from "../../lib/storage";
 import { createNarrowPortrait } from "../../lib/viewport";
 import { LEVELS, layoutFor, type Dims, type LevelId } from "./levels";
 import { blank, chordTargets, flagMines, placeMines, reveal, revealMines, type Cell } from "./logic";
+import { sfx } from "./sound";
 
 export type Status = "idle" | "playing" | "won" | "lost";
 type Best = Partial<Record<LevelId, number>>;
@@ -79,6 +80,8 @@ export function createGame() {
     }
     setStatus(won ? "won" : "lost");
     sync(changed);
+    if (won) sfx.win();
+    else sfx.boom();
   }
 
   function play(starts: number[]) {
@@ -89,6 +92,7 @@ export function createGame() {
     sync(opened);
     if (hit) finish(false);
     else if (safeOpened === w * h - mines) finish(true);
+    else if (!hit) sfx.reveal(opened.length);
   }
 
   const over = () => status() === "won" || status() === "lost";
@@ -111,6 +115,7 @@ export function createGame() {
     c.flag = !c.flag;
     setFlags((f) => f + (c.flag ? 1 : -1));
     sync([i]);
+    sfx.flag(c.flag);
   }
 
   /** Primary tap: respects touch flag mode. */

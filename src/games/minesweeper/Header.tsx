@@ -1,6 +1,7 @@
-import { For, Show, useContext } from "solid-js";
+import { createSignal, For, Show, useContext } from "solid-js";
 import { GameCtx } from "./ctx";
 import { LEVELS, LEVEL_IDS } from "./levels";
+import { sfx } from "./sound";
 
 const pad = (n: number) => String(Math.max(n, 0)).padStart(3, "0");
 
@@ -11,6 +12,7 @@ const sunken = "bg-[#b0b0b0] text-black shadow-[inset_2px_2px_0_#7b7b7b,inset_-2
 
 export default function Header() {
   const g = useContext(GameCtx);
+  const [muted, setMuted] = createSignal(sfx.muted);
 
   return (
     <div class="mb-2 flex w-full flex-col items-center gap-2">
@@ -66,6 +68,13 @@ export default function Header() {
           🚩 Flag
         </button>
         <Show when={g.best()[g.levelId()]}>{(t) => <span class="px-1 text-sm font-semibold text-zinc-800">🏆 {t()}s</span>}</Show>
+        <button
+          aria-label={muted() ? "Unmute" : "Mute"}
+          class={`ml-auto flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-xs px-2 text-base ${raised} active:shadow-[inset_1px_1px_2px_#7b7b7b]`}
+          onClick={() => setMuted(sfx.toggle())}
+        >
+          {muted() ? "🔇" : "🔊"}
+        </button>
       </div>
     </div>
   );
