@@ -4,17 +4,24 @@ import { LEVELS, LEVEL_IDS } from "./levels";
 
 const pad = (n: number) => String(Math.max(n, 0)).padStart(3, "0");
 
+const face = (s: string) => (s === "won" ? "😎" : s === "lost" ? "😵" : "🙂");
+
+const raised = "bg-[#bdbdbd] text-zinc-800 shadow-[inset_2px_2px_0_#ffffff,inset_-2px_-2px_0_#7b7b7b]";
+const sunken = "bg-[#b0b0b0] text-black shadow-[inset_2px_2px_0_#7b7b7b,inset_-2px_-2px_0_#ffffff]";
+
 export default function Header() {
   const g = useContext(GameCtx);
-  const btn = "rounded px-3 py-1 text-sm";
 
   return (
-    <div class="mb-3 flex flex-col items-center gap-3">
-      <div class="flex gap-2">
+    <div class="mb-2 flex w-full flex-col items-center gap-2">
+      <div class="flex w-full gap-1.5">
         <For each={LEVEL_IDS}>
           {(id) => (
             <button
-              class={[btn, g.levelId() === id ? "bg-emerald-600" : "bg-zinc-700 hover:bg-zinc-600"]}
+              class={[
+                "min-h-11 flex-1 touch-manipulation rounded-xs px-2 text-sm font-semibold",
+                g.levelId() === id ? sunken : `${raised} active:shadow-[inset_1px_1px_2px_#7b7b7b]`,
+              ]}
               onClick={() => g.restart(id)}
             >
               {LEVELS[id].label}
@@ -23,22 +30,42 @@ export default function Header() {
         </For>
       </div>
 
-      <div class="flex items-center gap-4 font-mono text-2xl">
-        <span class="w-16 rounded bg-black px-2 text-right text-red-500">{pad(g.minesLeft())}</span>
-        <button class={[btn, "bg-zinc-700 text-base hover:bg-zinc-600"]} onClick={() => g.restart()}>
-          {g.status() === "won" ? "You won!" : g.status() === "lost" ? "Boom - retry" : "Restart"}
+      <div class="flex w-full items-center justify-between gap-2 rounded-xs bg-[#b0b0b0] p-1.5 shadow-[inset_2px_2px_0_#7b7b7b,inset_-2px_-2px_0_#ffffff]">
+        <span class="min-w-16 rounded-xs bg-black px-2 py-1 text-center font-mono text-xl leading-none text-red-500">
+          {pad(g.minesLeft())}
+        </span>
+        <button
+          aria-label="Restart"
+          class={`flex size-11 touch-manipulation items-center justify-center rounded-xs text-2xl ${raised} active:shadow-[inset_1px_1px_2px_#7b7b7b]`}
+          onClick={() => g.restart()}
+        >
+          {face(g.status())}
         </button>
-        <span class="w-16 rounded bg-black px-2 text-right text-red-500">{pad(g.elapsed())}</span>
+        <span class="min-w-16 rounded-xs bg-black px-2 py-1 text-center font-mono text-xl leading-none text-red-500">
+          {pad(g.elapsed())}
+        </span>
       </div>
 
-      <div class="flex items-center gap-4 text-sm text-zinc-400">
+      <div class="flex w-full items-center gap-1.5">
         <button
-          class={[btn, g.flagMode() ? "bg-amber-600 text-white" : "bg-zinc-700 text-zinc-200"]}
-          onClick={g.toggleFlagMode}
+          class={[
+            "min-h-11 flex-1 touch-manipulation rounded-xs px-2 text-sm font-semibold",
+            !g.flagMode() ? sunken : `${raised} active:shadow-[inset_1px_1px_2px_#7b7b7b]`,
+          ]}
+          onClick={() => g.flagMode() && g.toggleFlagMode()}
         >
-          Flag mode: {g.flagMode() ? "on" : "off"}
+          💣 Dig
         </button>
-        <Show when={g.best()[g.levelId()]}>{(t) => <span>Best: {t()}s</span>}</Show>
+        <button
+          class={[
+            "min-h-11 flex-1 touch-manipulation rounded-xs px-2 text-sm font-semibold",
+            g.flagMode() ? sunken : `${raised} active:shadow-[inset_1px_1px_2px_#7b7b7b]`,
+          ]}
+          onClick={() => !g.flagMode() && g.toggleFlagMode()}
+        >
+          🚩 Flag
+        </button>
+        <Show when={g.best()[g.levelId()]}>{(t) => <span class="px-1 text-sm font-semibold text-zinc-800">🏆 {t()}s</span>}</Show>
       </div>
     </div>
   );

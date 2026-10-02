@@ -1,6 +1,7 @@
 import { createEffect, createMemo, createSignal, createStore, untrack } from "solid-js";
 import { load, save } from "../../lib/storage";
-import { LEVELS, type LevelId } from "./levels";
+import { createNarrowPortrait } from "../../lib/viewport";
+import { LEVELS, layoutFor, type Dims, type LevelId } from "./levels";
 import { blank, chordTargets, flagMines, placeMines, reveal, revealMines, type Cell } from "./logic";
 
 export type Status = "idle" | "playing" | "won" | "lost";
@@ -12,18 +13,22 @@ const BEST_KEY = "ms:best";
 /**
  * `board` is the plain source of truth (fast to mutate, non-reactive).
  * `cells` is a reactive mirror; only changed indices are synced to it.
+ * Board dims are snapshotted at restart so a mid-game rotate never
+ * nukes progress — the new layout applies to the next game.
  */
 export function createGame() {
   const [levelId, setLevelId] = createSignal<LevelId>(load(LEVEL_KEY, "easy"));
-  const level = createMemo(() => LEVELS[levelId()]);
+  const narrow = createNarrowPortrait();
+  const [dims, setDims] = createSignal<Dims>(untrack(() => layoutFor(untrack(levelId), narrow())));
+  const level = createMemo(() => ({ ...LEVELS[levelId()], ...dims() }));
   const [status, setStatus] = createSignal<Status>("idle");
   const [flags, setFlags] = createSignal(0);
   const [elapsed, setElapsed] = createSignal(0);
   const [flagMode, setFlagMode] = createSignal(false);
   const [best, setBest] = createSignal<Best>(load(BEST_KEY, {}));
 
-  const size = (id: LevelId) => LEVELS[id].w * LEVELS[id].h;
-  let board = blank(size(untrack(levelId)));
+  const size = (d: Dims) => d.w * d.h;
+  let board = blank(size(untrack(dims)));
   let safeOpened = 0;
   const [cells, setCells] = createStore<Cell[]>(blank(board.length));
 
@@ -47,7 +52,9 @@ export function createGame() {
     });
 
   function restart(id: LevelId = levelId()) {
-    board = blank(size(id));
+    const d = layoutFor(id, narrow());
+    setDims(d);
+    board = blank(size(d));
     safeOpened = 0;
     setCells(() => blank(board.length));
     setLevelId(id);
@@ -106,13 +113,14 @@ export function createGame() {
     sync([i]);
   }
 
-  /** Primary tap: respects mobile flag mode. */
+  /** Primary tap: respects touch flag mode. */
   const tap = (i: number) => (flagMode() && !board[i].open ? flag(i) : open(i));
 
   return {
     cells, level, levelId, status, elapsed, best, flagMode,
     minesLeft: () => level().mines - flags(),
     cols: () => level().w,
+    rows: () => level().h,
     count: () => level().w * level().h,
     toggleFlagMode: () => setFlagMode((m) => !m),
     tap, flag, restart,
