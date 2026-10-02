@@ -1,18 +1,25 @@
 import { createSignal, createStore, onSettled } from "solid-js";
 import { load, save } from "../../lib/storage";
 import { sfx } from "../../lib/sound";
-import { LEVEL_COUNT, makeLevel, type Dir, type Level } from "./levels";
+import { LEVELS_PER, makeLevel, type DiffId, type Dir, type Level } from "./levels";
 import { castRay, extendPath, pathLen, slicePath, toPts, type Pt } from "./logic";
 
 export type Status = "playing" | "won" | "lost";
 export const HEARTS = 5;
 const SPEED = 16; // cells / second
-const PROG_KEY = "ar:progress";
+const PROG_KEY = "ar:prog2";
 
 interface Prog {
   unlocked: number;
   done: number[];
 }
+type AllProg = Record<DiffId, Prog>;
+
+const EMPTY: AllProg = {
+  easy: { unlocked: 0, done: [] },
+  medium: { unlocked: 0, done: [] },
+  hard: { unlocked: 0, done: [] },
+};
 
 export interface Shape {
   d: string;
@@ -39,9 +46,10 @@ function boardRatio(): number {
 }
 
 export function createArrows() {
-  const [prog, setProg] = createSignal<Prog>(load(PROG_KEY, { unlocked: 0, done: [] }));
+  const [prog, setProg] = createSignal<AllProg>(load(PROG_KEY, EMPTY));
+  const [diff, setDiff] = createSignal<DiffId | null>(null); // null = picker open
   const [li, setLi] = createSignal(0);
-  let lv = makeLevel(1, boardRatio()); // plain: layout never changes mid-level
+  let lv = makeLevel(1, "easy", boardRatio()); // plain: layout never changes mid-level
   const [dims, setDims] = createSignal({ w: lv.w, h: lv.h });
   const [shapes, setShapes] = createStore<Shape[]>(shapesOf(lv));
   const [hearts, setHearts] = createSignal(HEARTS);
@@ -52,11 +60,12 @@ export function createArrows() {
   let raf = 0;
   onSettled(() => () => cancelAnimationFrame(raf));
 
-  function loadLevel(n: number) {
+  function loadLevel(n: number, d: DiffId) {
     cancelAnimationFrame(raf);
-    lv = makeLevel(n + 1, boardRatio());
+    lv = makeLevel(n + 1, d, boardRatio());
     setDims({ w: lv.w, h: lv.h });
     setShapes(() => shapesOf(lv));
+    setDiff(d);
     setLi(n);
     setHearts(HEARTS);
     setStatus("playing");
@@ -65,12 +74,17 @@ export function createArrows() {
   }
 
   function win() {
+    const d = diff()!;
     setStatus("won");
     sfx.win();
-    setProg((p) => {
+    setProg((all) => {
+      const p = all[d];
       const next = {
-        unlocked: Math.max(p.unlocked, Math.min(li() + 1, LEVEL_COUNT - 1)),
-        done: p.done.includes(li()) ? p.done : [...p.done, li()],
+        ...all,
+        [d]: {
+          unlocked: Math.max(p.unlocked, Math.min(li() + 1, LEVELS_PER - 1)),
+          done: p.done.includes(li()) ? p.done : [...p.done, li()],
+        },
       };
       save(PROG_KEY, next);
       return next;
@@ -121,7 +135,7 @@ export function createArrows() {
   }
 
   function tap(id: number) {
-    if (busy() || status() !== "playing" || shapes[id].gone) return;
+    if (!diff() || busy() || status() !== "playing" || shapes[id].gone) return;
     const alive = shapes.map((s) => !s.gone);
     const ray = castRay(lv, alive, id);
     const piece = lv.pieces[id];
@@ -143,17 +157,24 @@ export function createArrows() {
   }
 
   function selectLevel(n: number) {
-    if (n >= 0 && n < LEVEL_COUNT && n <= prog().unlocked) loadLevel(n);
+    const d = diff();
+    if (d && n >= 0 && n < LEVELS_PER && n <= prog()[d].unlocked) loadLevel(n, d);
   }
 
+  /** Pick a difficulty and resume at its first unfinished level. */
+  const pickDiff = (d: DiffId) => loadLevel(prog()[d].unlocked, d);
+
   return {
-    shapes, hearts, status, li, prog, bad, dims,
+    shapes, hearts, status, li, prog, bad, dims, diff,
+    unlocked: () => (diff() ? prog()[diff()!].unlocked : 0),
     levelNo: () => li() + 1,
     tap,
-    restart: () => loadLevel(li()),
+    restart: () => diff() && loadLevel(li(), diff()!),
     selectLevel,
     next: () => selectLevel(li() + 1),
     prev: () => selectLevel(li() - 1),
+    pickDiff,
+    openPicker: () => setDiff(null),
   };
 }
 

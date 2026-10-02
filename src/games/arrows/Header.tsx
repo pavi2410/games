@@ -2,7 +2,7 @@ import { createSignal, Show, useContext } from "solid-js";
 import { sfx } from "../../lib/sound";
 import { ArrowsCtx } from "./ctx";
 import { HEARTS } from "./state";
-import { LEVEL_COUNT } from "./levels";
+import { DIFFS, LEVELS_PER } from "./levels";
 
 export default function Header() {
   const g = useContext(ArrowsCtx);
@@ -24,13 +24,16 @@ export default function Header() {
             <span class="text-lg font-bold text-sky-600">Level {g.levelNo()}</span>
             <button
               class={`${icon} size-8 text-base`}
-              disabled={g.li() >= Math.min(g.prog().unlocked, LEVEL_COUNT - 1)}
+              disabled={g.li() >= Math.min(g.unlocked(), LEVELS_PER - 1)}
               onClick={g.next}
               aria-label="Next level"
             >
               ›
             </button>
           </div>
+          <button class="text-xs font-semibold text-sky-500 underline" onClick={g.openPicker}>
+            {g.diff() ? DIFFS[g.diff()!].label : ""} · change
+          </button>
           <span class="text-sm tracking-wider" aria-label={`${g.hearts()} hearts left`}>
             {"❤️".repeat(g.hearts())}
             <span class="opacity-25 grayscale">{"❤️".repeat(HEARTS - g.hearts())}</span>
@@ -49,7 +52,7 @@ export default function Header() {
       <Show when={g.status() === "won"}>
         <div class="flex items-center justify-between rounded-lg bg-emerald-100 px-3 py-2 text-sm font-semibold text-emerald-800">
           <span>Cleared!</span>
-          <Show when={g.li() < LEVEL_COUNT - 1} fallback={<span>All levels done 🎉</span>}>
+          <Show when={g.li() < LEVELS_PER - 1} fallback={<span>All levels done 🎉</span>}>
             <button class="rounded bg-emerald-600 px-3 py-1 text-white" onClick={g.next}>
               Next →
             </button>

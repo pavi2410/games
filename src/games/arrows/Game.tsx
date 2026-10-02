@@ -3,6 +3,7 @@ import { ArrowsCtx } from "./ctx";
 import { createArrows } from "./state";
 import Header from "./Header";
 import Board from "./Board";
+import Picker from "./Picker";
 
 function Panel() {
   const g = useContext(ArrowsCtx);
@@ -19,6 +20,7 @@ function Panel() {
     >
       <Header />
       <Board />
+      <Picker />
     </div>
   );
 }

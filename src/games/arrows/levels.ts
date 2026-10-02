@@ -20,7 +20,26 @@ export interface Level {
   pieces: Piece[];
 }
 
-export const LEVEL_COUNT = 30;
+export const LEVELS_PER = 10;
+
+export type DiffId = "easy" | "medium" | "hard";
+
+interface Diff {
+  label: string;
+  blurb: string;
+  w: number; // starting grid width
+  wMax: number; // width cap as levels advance
+  len: number; // starting max snake length (shorter = more arrows)
+  depth: number; // base dependency depth
+}
+
+/** Bigger grids and tighter weaves as difficulty rises. */
+export const DIFFS: Record<DiffId, Diff> = {
+  easy: { label: "Easy", blurb: "Small grid, few arrows", w: 5, wMax: 6, len: 3, depth: 2 },
+  medium: { label: "Medium", blurb: "Bigger grid, denser maze", w: 7, wMax: 8, len: 4, depth: 4 },
+  hard: { label: "Hard", blurb: "Huge grid, packed maze", w: 9, wMax: 11, len: 5, depth: 6 },
+};
+export const DIFF_IDS = Object.keys(DIFFS) as DiffId[];
 
 function mulberry32(seed: number) {
   let a = seed;
@@ -189,13 +208,15 @@ function orient(paths: number[][], w: number, h: number, rand: Rand, targetDepth
  * choose head ends so the board is clearable. Retries with fresh tilings; if
  * none is perfect the best attempt drops its few stuck snakes.
  */
-export function makeLevel(n: number, ratio = 1.4): Level {
-  const w = Math.min(5 + ((n - 1) >> 1), 10);
+export function makeLevel(n: number, diff: DiffId, ratio = 1.4): Level {
+  const d = DIFFS[diff];
+  const w = Math.min(d.w + ((n - 1) >> 2), d.wMax);
   const h = Math.round(w * ratio);
-  const maxLen = Math.min(3 + (n >> 3), 6);
-  const turn = Math.min(0.25 + n * 0.015, 0.55);
-  const targetDepth = Math.min(2 + Math.floor(n * 0.45), 12);
-  const rand = mulberry32(n * 7919 + 13);
+  const maxLen = Math.min(d.len + (n >> 3), 7);
+  const turn = Math.min(0.3 + n * 0.02, 0.6);
+  const targetDepth = Math.min(d.depth + Math.floor(n * 0.5), 14);
+  const seed = n * 7919 + 13 + DIFF_IDS.indexOf(diff) * 104729;
+  const rand = mulberry32(seed);
 
   let best: Attempt | null = null;
   for (let a = 0; a < 40; a++) {
