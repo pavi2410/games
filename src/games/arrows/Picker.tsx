@@ -30,6 +30,9 @@ export default function Picker() {
               )}
             </For>
           </div>
+          <a href="/" class="mt-4 block text-center text-sm font-semibold text-zinc-500 underline">
+            ‹ Back to games
+          </a>
         </div>
       </div>
     </Show>

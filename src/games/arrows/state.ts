@@ -48,6 +48,7 @@ function boardRatio(): number {
 export function createArrows() {
   const [prog, setProg] = createSignal<AllProg>(load(PROG_KEY, EMPTY));
   const [diff, setDiff] = createSignal<DiffId | null>(null); // null = picker open
+  const [menu, setMenu] = createSignal(false);
   const [li, setLi] = createSignal(0);
   let lv = makeLevel(1, "easy", boardRatio()); // plain: layout never changes mid-level
   const [dims, setDims] = createSignal({ w: lv.w, h: lv.h });
@@ -66,6 +67,7 @@ export function createArrows() {
     setDims({ w: lv.w, h: lv.h });
     setShapes(() => shapesOf(lv));
     setDiff(d);
+    setMenu(false);
     setLi(n);
     setHearts(HEARTS);
     setStatus("playing");
@@ -135,7 +137,7 @@ export function createArrows() {
   }
 
   function tap(id: number) {
-    if (!diff() || busy() || status() !== "playing" || shapes[id].gone) return;
+    if (!diff() || menu() || busy() || status() !== "playing" || shapes[id].gone) return;
     const alive = shapes.map((s) => !s.gone);
     const ray = castRay(lv, alive, id);
     const piece = lv.pieces[id];
@@ -174,7 +176,13 @@ export function createArrows() {
     next: () => selectLevel(li() + 1),
     prev: () => selectLevel(li() - 1),
     pickDiff,
-    openPicker: () => setDiff(null),
+    openPicker: () => {
+      setMenu(false);
+      setDiff(null);
+    },
+    menu,
+    openMenu: () => setMenu(true),
+    closeMenu: () => setMenu(false),
   };
 }
 
