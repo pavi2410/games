@@ -20,4 +20,10 @@ export const games: GameInfo[] = [
     blurb: "Slide every arrow out of the maze without crashing.",
     component: lazy(() => import("./arrows/Game")),
   },
+  {
+    id: "regex",
+    title: "Regex Golf",
+    blurb: "Match the good words, dodge the bad. Shortest regex wins.",
+    component: lazy(() => import("./regex/Game")),
+  },
 ];
