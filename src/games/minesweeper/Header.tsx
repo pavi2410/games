@@ -1,7 +1,7 @@
 import { createSignal, For, Show, useContext } from "solid-js";
 import { GameCtx } from "./ctx";
 import { LEVELS, LEVEL_IDS } from "./levels";
-import { sfx } from "./sound";
+import { sfx } from "../../lib/sound";
 
 const pad = (n: number) => String(Math.max(n, 0)).padStart(3, "0");
 

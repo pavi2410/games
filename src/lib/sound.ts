@@ -1,4 +1,4 @@
-import { load, save } from "../../lib/storage";
+import { load, save } from "./storage";
 
 const MUTE_KEY = "ms:muted";
 
@@ -32,6 +32,23 @@ function blip(freq: number, dur = 0.06, type: OscillatorType = "square", vol = 0
   osc.stop(t + dur + 0.02);
 }
 
+/** Rising sweep. */
+function sweep(from: number, to: number, dur: number, type: OscillatorType = "square", vol = 0.05) {
+  const c = ac();
+  if (!c || muted) return;
+  const t = c.currentTime;
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(from, t);
+  osc.frequency.exponentialRampToValueAtTime(to, t + dur);
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(gain).connect(c.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+
 export const sfx = {
   get muted() {
     return muted;
@@ -45,6 +62,8 @@ export const sfx = {
   reveal: (opened: number) => blip(440 + Math.min(opened, 24) * 22, 0.07),
   flag: (on: boolean) => (on ? blip(660, 0.06) : blip(440, 0.06)),
   chord: () => blip(520, 0.05, "square", 0.03),
+  shoot: () => sweep(300, 900, 0.12),
+  error: () => blip(150, 0.15, "square", 0.06),
   boom() {
     const c = ac();
     if (!c || muted) return;

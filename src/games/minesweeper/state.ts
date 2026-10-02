@@ -3,7 +3,7 @@ import { load, save } from "../../lib/storage";
 import { createNarrowPortrait } from "../../lib/viewport";
 import { LEVELS, layoutFor, type Dims, type LevelId } from "./levels";
 import { blank, chordTargets, flagMines, placeMines, reveal, revealMines, type Cell } from "./logic";
-import { sfx } from "./sound";
+import { sfx } from "../../lib/sound";
 
 export type Status = "idle" | "playing" | "won" | "lost";
 type Best = Partial<Record<LevelId, number>>;
